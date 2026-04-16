@@ -1,0 +1,100 @@
+BEGIN
+
+    DISPLAY "INFIX TO POSTFIX & PREFIX CONVERTER"
+
+    // Step 1: Input
+    PROMPT user to enter infix expression
+    READ expression
+
+    // Step 2: Clean input
+    REMOVE all spaces from expression
+
+    // Step 3: Convert Infix to Postfix
+    INITIALIZE empty stack S
+    INITIALIZE empty string postfix
+
+    FOR each character ch in expression DO
+
+        IF ch is an operand (letter or digit) THEN
+            ADD ch to postfix
+
+        ELSE IF ch is '(' THEN
+            PUSH ch onto stack S
+
+        ELSE IF ch is ')' THEN
+            WHILE top of S is not '(' DO
+                POP from S and ADD to postfix
+            END WHILE
+            POP '(' from stack S
+
+        ELSE IF ch is an operator (+, -, *, /, ^) THEN
+            WHILE stack S is not empty AND
+                  precedence(ch) <= precedence(top of S) DO
+                POP from S and ADD to postfix
+            END WHILE
+            PUSH ch onto stack S
+        END IF
+
+    END FOR
+
+    // Pop remaining operators
+    WHILE stack S is not empty DO
+        POP from S and ADD to postfix
+    END WHILE
+
+
+    // Step 4: Convert Infix to Prefix
+
+    // 4.1 Reverse expression
+    SET reversedExpression = REVERSE(expression)
+
+    // 4.2 Swap brackets
+    FOR each character ch in reversedExpression DO
+        IF ch == '(' THEN
+            REPLACE with ')'
+        ELSE IF ch == ')' THEN
+            REPLACE with '('
+        END IF
+    END FOR
+
+    // 4.3 Convert to postfix again
+    INITIALIZE empty stack S2
+    INITIALIZE empty string tempPostfix
+
+    FOR each character ch in reversedExpression DO
+
+        IF ch is operand THEN
+            ADD ch to tempPostfix
+
+        ELSE IF ch is '(' THEN
+            PUSH ch onto S2
+
+        ELSE IF ch is ')' THEN
+            WHILE top of S2 is not '(' DO
+                POP from S2 and ADD to tempPostfix
+            END WHILE
+            POP '(' from S2
+
+        ELSE IF ch is operator THEN
+            WHILE S2 is not empty AND
+                  precedence(ch) <= precedence(top of S2) DO
+                POP from S2 and ADD to tempPostfix
+            END WHILE
+            PUSH ch onto S2
+        END IF
+
+    END FOR
+
+    WHILE S2 is not empty DO
+        POP from S2 and ADD to tempPostfix
+    END WHILE
+
+    // 4.4 Reverse to get prefix
+    SET prefix = REVERSE(tempPostfix)
+
+
+    // Step 5: Output results
+    DISPLAY "Postfix Expression: ", postfix
+    DISPLAY "Prefix Expression : ", prefix
+
+END
